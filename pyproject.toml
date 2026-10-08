@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "triad-rsi"
+version = "0.1.0"
+description = "Research primitives for coordinated self-improvement across data, harnesses, and models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Triad-RSI contributors"}]
+dependencies = []
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+
+[project.urls]
+Repository = "https://github.com/boringKey/Triad-RSI"
+Issues = "https://github.com/boringKey/Triad-RSI/issues"
+
+[project.scripts]
+triad-rsi-demo = "triad_rsi.demo:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
