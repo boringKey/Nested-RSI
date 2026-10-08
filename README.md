@@ -1,60 +1,69 @@
 <div align="center">
 
-# Triad-RSI
+# Nested-RSI
 
-### Data · Harness · Model
+### Local Improvement Loops, Global System Evolution
 
-**An open research framework for coordinated recursive self-improvement.**
+**Exploring RSI within RSI across data, harnesses, and models.**
 
-[![Tests](https://github.com/boringKey/Triad-RSI/actions/workflows/tests.yml/badge.svg)](https://github.com/boringKey/Triad-RSI/actions/workflows/tests.yml)
+[![Tests](https://github.com/boringKey/Nested-RSI/actions/workflows/tests.yml/badge.svg)](https://github.com/boringKey/Nested-RSI/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Status](https://img.shields.io/badge/Status-Research%20Preview-orange)
 
-[Quick start](#quick-start) · [Architecture](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Roadmap](ROADMAP.md) · [中文介绍](docs/README.zh-CN.md)
+[RSI within RSI](#rsi-within-rsi) · [Data-RSI](#data-rsi-a-local-loop-inside-the-global-loop) · [Quick start](#quick-start) · [Roadmap](ROADMAP.md) · [中文介绍](docs/README.zh-CN.md)
 
 </div>
 
-Triad-RSI studies how an AI agent system can improve its **training data**, **execution harness**, and **model** within a shared feedback loop—and how experience from that loop can inform better improvement strategies.
+**Nested-RSI explores an “RSI within RSI” architecture:** an outer loop coordinates improvements to an agent system, while individual improvement operators can run their own feedback-driven local loops. Local outcomes produce candidate data, harnesses, or models; only system changes accepted by the outer comparison become the starting state of subsequent global iterations.
 
-**v1 / 0.1.0 is a public core preview.** It releases working scheduling and evaluation components extracted from our research prototype, with an offline example and tests. The full training and benchmark pipeline is not included yet. Development is ongoing; see the [release boundary](docs/release-scope.md) and [changelog](CHANGELOG.md).
+The research focus is on **how improvement is organized**: local search and verification inside an operator, coordinated selection across operators, and evidence-driven revision of the improvement rules themselves.
 
-## The research question
+**Current release: v1 / 0.1.0, public core preview.** Scheduling, paired evaluation, and repeated confirmation are available with a runnable offline demo. The nested Data-RSI workflow below describes the research prototype; its full implementation and training integrations are being prepared for release. Development is ongoing. See [release scope](docs/release-scope.md) and [changelog](CHANGELOG.md).
 
-When an agent fails, should we improve its data, change its execution guidance, or update its training recipe? Can those interventions reinforce one another? Can the system learn to make better improvement decisions over successive cycles?
+## RSI within RSI
 
-| Component | Intended intervention |
-| --- | --- |
-| **Data** | Collect verified trajectories and generate targeted training examples from execution feedback. |
-| **Harness** | Revise prompts, workflows, tool-use guidance, and execution strategies. |
-| **Model** | Update parameters or training configurations using validated experience. |
+An improvement operator need not be a single fixed action. To improve the global system, it may first need to improve the process that produces its own candidates.
 
-We study both the evolving agent system and the rules used to improve it. Demonstrating sustained recursive gains remains a research goal, not a claim of this preview.
+| Level | Question | What changes? |
+| --- | --- | --- |
+| **Local operator loop** | How can this improvement attempt produce a better candidate? | Execution support, candidate construction, and validated local artifacts. |
+| **Global system loop** | Which intervention should be tried and inherited next? | The accepted data pool, harness, model checkpoint, and training recipe. |
+| **Improvement-rule revision** | Can experience make later improvement attempts more effective? | Operator proposal rules and experiment scheduling policies, subject to separate evaluation. |
 
-## System overview
+The outer loop coordinates **Data-RSI**, **Harness-RSI**, and **Model-RSI**. Data-RSI provides a concrete example of nesting: constructing better training data can itself require diagnosing failures, proposing harness changes, running paired probes, and incorporating teacher demonstrations.
 
-```mermaid
-flowchart LR
-    S[Accepted system] --> E[Execute and diagnose]
-    E --> Q[Select an eligible operator]
-    Q --> D[Data]
-    Q --> H[Harness]
-    Q --> M[Model]
-    D --> C[Candidate system]
-    H --> C
-    M --> C
-    C --> G[Paired repeated evaluation]
-    S --> G
-    G --> A{Accept?}
-    A -->|Yes: inherit candidate| S
-    A -->|No: retain current state| S
-    G -. Experiment history .-> R[Propose revised improvement rules]
-    R -. Future public release .-> Q
-```
+“Nested” describes this architecture. A bounded retry or assistance ladder alone does not establish recursive progress. The stronger research objective is to show that inherited artifacts or revised rules improve later cycles—not merely that multiple loops execute.
 
-This diagram describes the research architecture. **This release implements operator scheduling and candidate comparison**, not all boxes of the end-to-end system.
+## Data-RSI: a local loop inside the global loop
 
-## What works in v1
+Data-RSI asks: **what verified experience can help the current student overcome its failures?** The prototype uses a bounded, feedback-driven assistance process on improvement tasks:
+
+| Stage | Local action | Feedback and next step |
+| --- | --- | --- |
+| **1. Student execution** | Run the current student with its existing harness. | Retain verified trajectories and identify unresolved tasks. |
+| **2. Harness-assisted student** | Propose local guidance changes and compare student executions on matched tasks and seeds. | Use outcomes to select useful assistance and record failed attempts. |
+| **3. Teacher assistance** | For targets the student still cannot solve reliably, run a teacher with the selected harness. | Validate demonstrations; teacher origin alone does not qualify a sample. |
+| **4. Teacher-side harness refinement** | When enabled and the teacher also fails, use its failure feedback to propose another local harness revision. | Run a bounded paired comparison, including successful cases as controls. |
+| **5. Return to the outer loop** | Add eligible verified experience to the training pool and build a student candidate. | Evaluate that candidate against the accepted system before inheriting the update. |
+
+This is conditional escalation, not a requirement to run every stage on every task. Local harness proposals can be rejected, unsuccessful attempts inform subsequent proposals, and teacher-side refinement is budget-limited and configuration-dependent.
+
+The key distinction is between **improving the data-production process** and **accepting a global system update**. A locally useful harness is not automatically deployed. An individually verified trajectory can remain useful even if the harness that produced it fails a broader comparison. A newly trained student still needs to pass the outer selection gate.
+
+When a student update is accepted, later data construction starts from the updated student. Whether this interaction yields sustained gains, better data efficiency, or more effective future improvement remains an empirical question.
+
+## What is inherited?
+
+- **Trajectory admission:** a sample passes execution and quality checks and becomes eligible for the data pool.
+- **System acceptance:** a candidate passes the outer comparison and becomes the accepted state for later iterations.
+- **Rule acceptance:** a proposed improvement policy requires a separate same-start old/new comparison before adoption.
+
+These are distinct decisions. Local success does not bypass the global gate, and global selection outcomes do not substitute for held-out evaluation.
+
+The project studies this separation through controlled comparisons and reproducible evidence. It does not claim that every operator already has an equally developed internal loop, or that sustained recursive gains have been demonstrated by the public preview. See [architecture](docs/architecture.md) and [evaluation](docs/evaluation.md).
+
+## Current public release
 
 - **Cost-aware operator policy:** softmax-UCB sampling with exploration and a uniform probability floor.
 - **Controlled scheduling:** eligibility, coverage, attempt-balance constraints, and an optional injected proposal callback.
@@ -67,11 +76,11 @@ The demo does **not** generate data, train a model, or reproduce benchmark resul
 
 ## Quick start
 
-Requires Python 3.10+.
+Requires Python 3.10+. The v1 Python namespace (`triad_rsi`) and CLI (`triad-rsi-demo`) retain their original names for compatibility; the project and repository are now Nested-RSI.
 
 ```bash
-git clone https://github.com/boringKey/Triad-RSI.git
-cd Triad-RSI
+git clone https://github.com/boringKey/Nested-RSI.git
+cd Nested-RSI
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 python -m pip install .
@@ -135,7 +144,7 @@ tests/              Core behavior and failure-path tests
 | Milestone | Status | Scope |
 | --- | --- | --- |
 | **v1 / 0.1.0** | Current public preview | Scheduling, paired gates, repeated confirmation, demo, tests and documentation. |
-| **v2 / 0.2.x** | Planned | Portable operator/backend interfaces, accepted-state persistence and resume support. |
+| **v2 / 0.2.x** | Planned | Portable operator/backend interfaces, Data-RSI assistance loops, and accepted-state persistence. |
 | **v3 / 0.3.x** | Planned | Same-start improvement-rule trials and reproducible held-out evaluation recipes. |
 
 Future milestones are plans, not completed releases. The original experiments' internal iteration numbers are not public version numbers. See [ROADMAP.md](ROADMAP.md).

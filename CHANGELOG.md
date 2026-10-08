@@ -2,6 +2,15 @@
 
 Public versions record shipped content. Internal experiment iterations are not releases.
 
+## Project rename and documentation update — 2026-10-08
+
+- Rename the project and repository from Triad-RSI to Nested-RSI.
+- Adopt “Local Improvement Loops, Global System Evolution” as the subtitle.
+- Explain RSI within RSI and the prototype's bounded Data-RSI assistance loop.
+- Distinguish trajectory admission, system acceptance, and rule acceptance.
+- Remove the previous system-overview diagram; refresh English and Chinese documentation and repository links.
+- Keep the v1 `triad_rsi` Python namespace, `triad-rsi-demo` CLI, and package version for compatibility. This documentation update does not ship the full inner-loop implementation.
+
 ## v1 / 0.1.0 — 2026-10-08
 
 First public core preview:

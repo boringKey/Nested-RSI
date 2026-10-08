@@ -1,6 +1,20 @@
 # Architecture
 
-Triad-RSI separates **system state** (accepted model, harness, data pool, training recipe) from **improvement policy** (operator proposal rules and experiment scheduling).
+**Nested-RSI: Local Improvement Loops, Global System Evolution.**
+
+## RSI within RSI
+
+The outer loop selects an improvement operator; the operator can run a bounded feedback loop to construct its candidate. Local search outcomes feed system-level evaluation, while accumulated experiment evidence can inform later proposal rules and scheduling policies.
+
+Data-RSI makes this concrete in the prototype: current-student execution, paired probes of locally revised harnesses, teacher assistance for unresolved targets, and optional teacher-side harness refinement. Teacher failures can trigger further diagnosis rather than ending the data-construction process. Every stage uses verified outcomes, not model identity, to qualify trajectories.
+
+This workflow operates on improvement tasks. Temporary harness probes do not mutate production state. Selecting a locally useful harness and retaining an individually verified trajectory are separate decisions; a candidate student trained from the pool must still pass the outer gate.
+
+Once accepted, the updated student participates in subsequent improvement iterations. Demonstrating that this inheritance improves later search or data efficiency is a research objective. A fixed escalation ladder alone is not evidence of recursive progress.
+
+## State and policy
+
+Nested-RSI separates **system state** (accepted model, harness, data pool, training recipe) from **improvement policy** (operator proposal rules and experiment scheduling).
 
 The research prototype proposes a candidate, evaluates it against the accepted state, and carries accepted changes forward. Public v1 exposes scheduling and comparison primitives; callers are responsible for execution, persistence, and state promotion.
 

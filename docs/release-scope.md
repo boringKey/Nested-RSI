@@ -1,5 +1,9 @@
 # Release scope and provenance
 
+The project is now **Nested-RSI** (formerly Triad-RSI). Its public v1 package remains `triad-rsi`, imported as `triad_rsi`, with the `triad-rsi-demo` command. Repository naming and architecture documentation have changed; the executable v1 core is unchanged.
+
+The README's Data-RSI assistance stages describe the research prototype. The public package does not yet execute that workflow: student/teacher clients, local harness generation, trajectory admission, and training remain outside this release. The offline demo continues to use synthetic fixtures.
+
 v1 is a curated extraction from the author's existing research prototype, not a full experiment-workspace export. It cannot reproduce the complete training campaign.
 
 | Public module | Prototype origin | Adaptation |

@@ -1,6 +1,6 @@
 # Roadmap
 
-Triad-RSI is under active development. These are scoped plans without promised dates.
+Nested-RSI is under active development. These are scoped plans without promised dates.
 
 ## v1 / 0.1.0 — public core preview
 
@@ -12,6 +12,7 @@ Triad-RSI is under active development. These are scoped plans without promised d
 ## v2 / 0.2.x — portable experiment loop (planned)
 
 - [ ] Stable Data, Harness, and Model operator interfaces.
+- [ ] Publish the bounded Data-RSI assistance loop: student probes, harness refinement, teacher assistance, and trajectory admission.
 - [ ] Provider-neutral training, inference, and evaluation adapters.
 - [ ] Accepted-state persistence, candidate provenance, and resume logic.
 - [ ] One small end-to-end integration with documented dependencies.
