@@ -11,7 +11,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Status](https://img.shields.io/badge/Status-Research%20Preview-orange)
 
-[RSI within RSI](#rsi-within-rsi) · [Data-RSI](#data-rsi-a-local-loop-inside-the-global-loop) · [Quick start](#quick-start) · [Roadmap](ROADMAP.md) · [中文介绍](docs/README.zh-CN.md)
+[RSI within RSI](#rsi-within-rsi) · [Quick start](#quick-start) · [Roadmap](ROADMAP.md) · [中文介绍](docs/README.zh-CN.md)
 
 </div>
 
@@ -19,7 +19,7 @@
 
 The research focus is on **how improvement is organized**: local search and verification inside an operator, coordinated selection across operators, and evidence-driven revision of the improvement rules themselves.
 
-**Current release: v1 / 0.1.0, public core preview.** Scheduling, paired evaluation, and repeated confirmation are available with a runnable offline demo. The nested Data-RSI workflow below describes the research prototype; its full implementation and training integrations are being prepared for release. Development is ongoing. See [release scope](docs/release-scope.md) and [changelog](CHANGELOG.md).
+**Current release: v1 / 0.1.0, public core preview.** Scheduling, paired evaluation, and repeated confirmation are available with a runnable offline demo. The full nested improvement workflows and training integrations are being prepared for release. Development is ongoing. See [release scope](docs/release-scope.md) and [changelog](CHANGELOG.md).
 
 ## RSI within RSI
 
@@ -31,27 +31,9 @@ An improvement operator need not be a single fixed action. To improve the global
 | **Global system loop** | Which intervention should be tried and inherited next? | The accepted data pool, harness, model checkpoint, and training recipe. |
 | **Improvement-rule revision** | Can experience make later improvement attempts more effective? | Operator proposal rules and experiment scheduling policies, subject to separate evaluation. |
 
-The outer loop coordinates **Data-RSI**, **Harness-RSI**, and **Model-RSI**. Data-RSI provides a concrete example of nesting: constructing better training data can itself require diagnosing failures, proposing harness changes, running paired probes, and incorporating teacher demonstrations.
+The outer loop coordinates **Data-RSI**, **Harness-RSI**, and **Model-RSI**. For example, Data-RSI can first use the current student to generate trajectories, revise its harness in response to failures, and introduce teacher assistance for unresolved tasks. Verified experience then supports a student candidate that must pass the outer evaluation before being inherited. This illustrates how a local feedback loop can support global system evolution.
 
 “Nested” describes this architecture. A bounded retry or assistance ladder alone does not establish recursive progress. The stronger research objective is to show that inherited artifacts or revised rules improve later cycles—not merely that multiple loops execute.
-
-## Data-RSI: a local loop inside the global loop
-
-Data-RSI asks: **what verified experience can help the current student overcome its failures?** The prototype uses a bounded, feedback-driven assistance process on improvement tasks:
-
-| Stage | Local action | Feedback and next step |
-| --- | --- | --- |
-| **1. Student execution** | Run the current student with its existing harness. | Retain verified trajectories and identify unresolved tasks. |
-| **2. Harness-assisted student** | Propose local guidance changes and compare student executions on matched tasks and seeds. | Use outcomes to select useful assistance and record failed attempts. |
-| **3. Teacher assistance** | For targets the student still cannot solve reliably, run a teacher with the selected harness. | Validate demonstrations; teacher origin alone does not qualify a sample. |
-| **4. Teacher-side harness refinement** | When enabled and the teacher also fails, use its failure feedback to propose another local harness revision. | Run a bounded paired comparison, including successful cases as controls. |
-| **5. Return to the outer loop** | Add eligible verified experience to the training pool and build a student candidate. | Evaluate that candidate against the accepted system before inheriting the update. |
-
-This is conditional escalation, not a requirement to run every stage on every task. Local harness proposals can be rejected, unsuccessful attempts inform subsequent proposals, and teacher-side refinement is budget-limited and configuration-dependent.
-
-The key distinction is between **improving the data-production process** and **accepting a global system update**. A locally useful harness is not automatically deployed. An individually verified trajectory can remain useful even if the harness that produced it fails a broader comparison. A newly trained student still needs to pass the outer selection gate.
-
-When a student update is accepted, later data construction starts from the updated student. Whether this interaction yields sustained gains, better data efficiency, or more effective future improvement remains an empirical question.
 
 ## What is inherited?
 
